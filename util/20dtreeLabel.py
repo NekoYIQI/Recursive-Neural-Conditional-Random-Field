@@ -40,7 +40,7 @@ for line in data:
         deps = rel_split[1][:-1]
         deps = deps.replace(')','')
         if len(rel_split) != 2:
-            print 'error ', rel_split
+            print('error ', rel_split)
             sys.exit(0)
 
         else:
@@ -170,8 +170,8 @@ for line in data:
 
 
 
-print 'rels: ', len(rel_list)
-print 'vocab: ', len(vocab)
+print('rels: ', len(rel_list))
+print('vocab: ', len(vocab))
 
 cPickle.dump((vocab, rel_list, tree_dict), open("data_semEval/final_input_sample", "wb"))
 
