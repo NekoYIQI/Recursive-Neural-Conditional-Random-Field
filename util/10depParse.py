@@ -21,6 +21,7 @@ output, err = p.communicate()
 
 
 for line in output:
-    out_file.write(line)
+
+    out_file.write(str(line))
     
 out_file.close()
