@@ -15,7 +15,8 @@ differentiate beginning and inside of aspects/opinions
 
 from dtree_util import *
 import gen_util as gen
-import sys, cPickle, random, os
+import _pickle as cPickle
+import sys, random, os
 from numpy import *
 
 # import dependency parse trees
