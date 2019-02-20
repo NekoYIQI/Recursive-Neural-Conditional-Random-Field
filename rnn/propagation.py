@@ -83,9 +83,9 @@ def forward_prop(params, tree, d, c, labels=True):
                     # - this shouldn't happen unless the parser spit out a seriously 
                     #   malformed tree
                     except KeyError:
-                        print 'forward propagation error'
-                        print tree.get_words()
-                        print curr.word, rel, tree.get(ind).word
+                        print('forward propagation error')
+                        print(tree.get_words())
+                        print(curr.word, rel, tree.get(ind).word)
                 
                 kid_sum += Wv.dot(curr.vec)
                 curr.p = tanh(kid_sum + b)

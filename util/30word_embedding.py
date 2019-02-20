@@ -6,7 +6,7 @@ Created on Wed May 27 19:50:17 2015
 """
 
 import numpy as np
-import cPickle
+import _pickle as cPickle
 
 # import word2vec file with the format: word, vector
 # change the path to the one containing your word2vec 
@@ -48,12 +48,12 @@ for ind, word in enumerate(vocab):
             row += 1
         count += 1
     else:
-        print word,
+        print(word)
         for i in range(100):
             word_embedding[i][ind] = 2 * np.random.rand() - 1
     
-print len(vocab)
-print count
+print(len(vocab))
+print(count)
 #print word_embedding
 
 

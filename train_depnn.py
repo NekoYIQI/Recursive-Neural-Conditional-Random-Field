@@ -7,7 +7,8 @@ from util.math_util import *
 from util.dtree_util import *
 from rnn.adagrad import Adagrad
 import rnn.propagation as prop
-import cPickle, time, argparse
+import _pickle as cPickle
+import time, argparse
 import random
 
 #computes parameter updates with regularization
@@ -152,11 +153,11 @@ if __name__ == '__main__':
     # "training_log"
     log_file = param_file.split('_')[0] + '_log'
 
-    print 'number of training sentences:', len(train_trees)
+    print('number of training sentences:', len(train_trees))
     rel_list.remove('root')
-    print 'number of dependency relations:', len(rel_list)
+    print('number of dependency relations:', len(rel_list))
     # number of classes
-    print 'number of classes:', args['c']
+    print('number of classes:', args['c'])
 
     ## remove incorrectly parsed sentences from data
     # print 'removing bad trees train...'
@@ -168,7 +169,7 @@ if __name__ == '__main__':
             bad_trees.append(ind)
 
         elif tree.get(0).is_word == 0:
-            print tree.get_words(), ind
+            print(tree.get_words(), ind)
             bad_trees.append(ind)
 
     # pop bad trees, higher indices first
@@ -192,7 +193,7 @@ if __name__ == '__main__':
     r = roll_params(params, rel_list)
 
     dim = r.shape[0]
-    print 'parameter vector dimensionality:', dim
+    print('parameter vector dimensionality:', dim)
 
     log = open(log_file, 'w')
     paramfile = open( param_file, 'wb')
@@ -240,14 +241,14 @@ if __name__ == '__main__':
 
                 lstring = 'epoch: ' + str(epoch) + ' batch_ind: ' + str(batch_ind) + \
                         ' error, ' + str(err) + ' time = '+ str(time.time()-now) + ' sec'
-                print lstring
+                print(lstring)
                 log.write(lstring + '\n')
                 log.flush()
 
                 epoch_error += err
 
             # done with epoch
-            print 'done with epoch ', epoch, ' epoch error = ', epoch_error, ' min error = ', min_error
+            print('done with epoch ', epoch, ' epoch error = ', epoch_error, ' min error = ', min_error)
             lstring = 'done with epoch ' + str(epoch) + ' epoch error = ' + str(epoch_error) \
                      + ' min error = ' + str(min_error) + '\n\n'
             log.write(lstring)
@@ -256,7 +257,7 @@ if __name__ == '__main__':
             # save parameters if the current model is better than previous best model
             if epoch_error < min_error:
                 min_error = epoch_error
-                print 'saving model...'
+                print('saving model...')
                 params = (rel_dict, Wv, Wc, b, b_c, We)
 
             # reset adagrad weights

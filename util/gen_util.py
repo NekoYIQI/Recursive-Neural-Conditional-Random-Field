@@ -90,7 +90,7 @@ def gen_dtrnn_params(d, c, rels):
     rel_dict = {}
     np.random.seed(3)
     for rel in rels:
-	   rel_dict[rel] = np.random.rand(d, d) * 2 * r - r
+        rel_dict[rel] = np.random.rand(d, d) * 2 * r - r
 
     return (
 	    rel_dict,
@@ -123,7 +123,7 @@ def init_dtrnn_grads(rel_list, d, c, len_voc):
 
     rel_grads = {}
     for rel in rel_list:
-	  rel_grads[rel] = np.zeros( (d, d) )
+        rel_grads[rel] = np.zeros( (d, d) )
 
     return [
 	    rel_grads,
@@ -139,7 +139,7 @@ def init_crfrnn_grads(rel_list, d, c, len_voc):
 
     rel_grads = {}
     for rel in rel_list:
-	  rel_grads[rel] = np.zeros( (d, d) )
+        rel_grads[rel] = np.zeros( (d, d) )
 
     return [
 	    rel_grads,
