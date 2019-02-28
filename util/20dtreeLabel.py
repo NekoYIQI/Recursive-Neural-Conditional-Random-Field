@@ -14,9 +14,7 @@ differentiate beginning and inside of aspects/opinions
 
 
 from dtree_util import *
-import gen_util as gen
-import _pickle as cPickle
-import sys, random, os
+import pickle as cPickle
 from numpy import *
 
 # import dependency parse trees
@@ -25,6 +23,7 @@ f = open('data_semEval/raw_parses_sample', 'r')
 indice = 0
 
 data = f.readlines()
+# in plist, each sentence is stored as a list of tuples(rel, [(ind1, word1), (ind2, word2)])
 plist = []
 tree_dict = []
 vocab = []
@@ -40,6 +39,7 @@ for line in data:
         rel = rel_split[0]
         deps = rel_split[1][:-1]
         deps = deps.replace(')','')
+        # a dependency entry should contain two parts: word and relation
         if len(rel_split) != 2:
             print('error ', rel_split)
             sys.exit(0)
@@ -68,6 +68,8 @@ for line in data:
             word = words[0]
             ind = int(words[len(words) - 1])
 
+            # in the case that the original word contains "-"
+            # revert the unnecessary change done by split('-')
             if len(words) > 2:
                 word = '-'.join([w for w in words[:-1]])
 
@@ -75,7 +77,8 @@ for line in data:
         # store dependency relations for each word pair    
         plist.append((rel,final_deps))
 
-    # after processing one sentence
+    # each raw parsed dependency is separated by while space
+    # line.strip() will return false if we have processed one sentence
     else:
         max_ind = -1
         for rel, deps in plist:
@@ -170,11 +173,9 @@ for line in data:
         indice += 1
 
 
-
 print('rels: ', len(rel_list))
 print('vocab: ', len(vocab))
 
 cPickle.dump((vocab, rel_list, tree_dict), open("data_semEval/final_input_sample", "wb"))
-
 
 
