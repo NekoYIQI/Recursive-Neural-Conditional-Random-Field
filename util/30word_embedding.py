@@ -6,23 +6,28 @@ Created on Wed May 27 19:50:17 2015
 """
 
 import numpy as np
-import _pickle as cPickle
+import pickle as cPickle
 
 # import word2vec file with the format: word, vector
 # change the path to the one containing your word2vec 
-dic_file = open("./data_semEval/w2v_sample.txt", "r")
+dic_file = open("./word2vec/word2vec_mc5.txt", "r")
 dic = dic_file.readlines()
 
 dictionary = {}
 
+index = 0
 for line in dic:
-    word_vector = line.split(",")
+    if(index == 0):
+        index = index + 1
+        continue
+    index = index + 1
+    word_vector = line.split(" ")
 
     i = 1
     while '.' not in word_vector[i] or '..' in word_vector[i] or word_vector[i] == '.':
         i += 1
         
-    word = ','.join(word_vector[:i])
+    word = ' '.join(word_vector[:i])
     
     vector_list = []
     for element in word_vector[i:len(word_vector)-1]:
