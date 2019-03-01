@@ -7,7 +7,7 @@ from util.math_util import *
 from util.dtree_util import *
 from rnn.adagrad import Adagrad
 import rnn.propagation as prop
-import _pickle as cPickle
+import pickle as cPickle
 import time, argparse
 import random
 
