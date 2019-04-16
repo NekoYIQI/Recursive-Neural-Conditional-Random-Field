@@ -102,9 +102,9 @@ def get_row(line_contents, column_names):
 if __name__ == '__main__':
     """Convert a yelp dataset file from json to csv."""
 
-    json_file = 'review.json'
+    json_file = 'reviews_Electronics_5.json'
     csv_file = '{0}.csv'.format(json_file.split('.json')[0])
 
     # column_names = get_superset_of_column_names_from_file(json_file)
-    column_names = ['text']
+    column_names = ['reviewText']
     read_and_write_file(json_file, csv_file, column_names)

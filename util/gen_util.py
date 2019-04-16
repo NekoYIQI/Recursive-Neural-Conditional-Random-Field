@@ -66,6 +66,8 @@ def roll_params(params, rel_list):
 
     (rel_dict, Wv, Wc, b, b_c, We) = params
 
+    # print("size of rel_dict: ", len(rel_dict))
+
     rels = np.concatenate( [rel_dict[key].ravel() for key in rel_list] )
 
     return np.concatenate( (rels, Wv.ravel(), Wc.ravel(), b.ravel(), b_c.ravel(), We.ravel() ) )
@@ -74,7 +76,6 @@ def roll_params(params, rel_list):
 def roll_params_noWcrf(params, rel_list):
 
     (rel_dict, Wv, b, We) = params
-
     rels = np.concatenate( [rel_dict[key].ravel() for key in rel_list] )
 
     return np.concatenate( (rels, Wv.ravel(), b.ravel(), We.ravel() ) )
@@ -92,6 +93,8 @@ def gen_dtrnn_params(d, c, rels):
     for rel in rels:
         rel_dict[rel] = np.random.rand(d, d) * 2 * r - r
 
+    # print(rel_dict)
+    
     return (
 	    rel_dict,
         #Wv

@@ -1,17 +1,11 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Wed May 27 19:50:17 2015
-
-@author: wangwenya
-"""
-
 import numpy as np
 import pickle as cPickle
 
 # import word2vec file with the format: word, vector
 # change the path to the one containing your word2vec 
-dic_file = open("./word2vec/word2vec_mc5.txt", "r")
+dic_file = open("./word2vec/word2vec_laptop.txt", "r")
 dic = dic_file.readlines()
+dic_file.close()
 
 dictionary = {}
 
@@ -35,12 +29,13 @@ for line in dic:
         
     vector = np.asarray(vector_list)
     dictionary[word] = vector
-    
 
-final_input = cPickle.load(open("data_semEval/final_input_sample", "rb"))
+
+
+final_input = cPickle.load(open("data_semEval/final_laptop_train_input", "rb"))
 vocab = final_input[0]
 
-word_embedding = np.zeros((100, len(vocab)))
+word_embedding = np.zeros((300, len(vocab)))
 
 count = 0
 
@@ -62,4 +57,4 @@ print(count)
 #print word_embedding
 
 
-cPickle.dump(word_embedding, open("data_semEval/word_embeddings_sample", "wb"))
+cPickle.dump(word_embedding, open("data_semEval/word_embeddings_laptop", "wb"))

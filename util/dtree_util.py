@@ -21,6 +21,15 @@ class node:
 
         else:
             self.is_word = 0
+    def getnode(self):
+        if self.word:
+            print("Word: ", self.word)
+        if self.kids:
+            print("List of kids: ", self.kids)
+        if self.parent:
+            print("List of parents: ", self.parent)
+        if self.ind:
+            print("Index: ", self.ind)
 
 # - a dtree consists of a list of nodes
 # - if you want to use a different dataset, check out the preprocessing scripts
@@ -93,3 +102,7 @@ class dtree:
             sum += node.label_error
 
         return sum
+
+    def get_tree(self):
+        for node in self.nodes:
+            node.getnode()

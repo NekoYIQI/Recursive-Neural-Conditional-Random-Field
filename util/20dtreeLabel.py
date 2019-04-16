@@ -1,24 +1,10 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Fri May 22 10:28:35 2015
-
-@author: wangwenya
-"""
-
-"""
-create tree structures from raw parses for training sentences
-accumulate vocabulary
-ignore lemmatization
-differentiate beginning and inside of aspects/opinions
-"""
-
-
 from dtree_util import *
 import pickle as cPickle
 from numpy import *
 
 # import dependency parse trees
-f = open('data_semEval/raw_parses_sample', 'r')
+# f = open('data_semEval/raw_parse_laptop_train', 'r')
+f = open('data_semEval/raw_parse_laptop_test', 'r')
 
 indice = 0
 
@@ -30,103 +16,79 @@ vocab = []
 rel_list = []
 
 # import ground-truth aspect term labels and opinion term labels
-label_file = open('data_semEval/aspectTerm_sample', 'r')
-label_sentence = open('data_semEval/opinion_sample', 'r')
+# label_file = open('data_semEval/laptop_aspect_train.txt', 'r')
+# label_sentence = open('data_semEval/train_laptop_opinion', 'r')
 
+label_file = open('data_semEval/laptop_aspect_test.txt', 'r')
+label_sentence = open('data_semEval/test_laptop_opinion', 'r')
+
+vocab, rel_list, train_trees = cPickle.load(open("data_semEval/final_laptop_train_input", "rb"))
+
+index = 1
 for line in data:
     if line.strip():
-        rel_split = line.split('(')
-        rel = rel_split[0]
-        deps = rel_split[1][:-1]
-        deps = deps.replace(')','')
-        # a dependency entry should contain two parts: word and relation
-        if len(rel_split) != 2:
-            print('error ', rel_split)
-            sys.exit(0)
+        line_list = line.split('\n')
+        line = line_list[0]
+        rel_split = line.split('\t')
+        # print(rel_split)
+        word = rel_split[0]
+        parent = rel_split[2]
+        rel = rel_split[3]
 
-        else:
-            dep_split = deps.split(',')
-            
-        if len(dep_split) > 2:
-            fixed = []
-            half = ''
-            for piece in dep_split:
-                piece = piece.strip()
-                if '-' not in piece:
-                    half += piece
-
-                else:
-                    fixed.append(half + piece)
-                    half = ''
-
-                    #print 'fixed: ', fixed
-            dep_split = fixed
-
-        final_deps = []
-        for dep in dep_split:
-            words = dep.split('-')
-            word = words[0]
-            ind = int(words[len(words) - 1])
-
-            # in the case that the original word contains "-"
-            # revert the unnecessary change done by split('-')
-            if len(words) > 2:
-                word = '-'.join([w for w in words[:-1]])
-
-            final_deps.append( (ind, word.strip()) )
-        # store dependency relations for each word pair    
-        plist.append((rel,final_deps))
+        final_deps = (index, word, parent)
+ 
+        plist.append((rel, final_deps))
+        index += 1
 
     # each raw parsed dependency is separated by while space
     # line.strip() will return false if we have processed one sentence
     else:
         max_ind = -1
+        print(plist)
         for rel, deps in plist:
-            for ind, word in deps:
-                if ind > max_ind:
-                    max_ind = ind
+            if deps[0] > max_ind:
+                max_ind = deps[0]
 
         # load words into nodes, then make a dependency tree
         nodes = [None for i in range(0, max_ind + 1)]
+        nodes[0] = 'ROOT'
         for rel, deps in plist:
-            for ind, word in deps:
-                nodes[ind] = word
+            ind = deps[0]
+            nodes[ind] = deps[1]
+        print(nodes)
 
         tree = dtree(nodes)
 
         opinion_words = []
-            
-        
+                   
         aspect_term = label_file.readline().rstrip()
         labeled_sent = label_sentence.readline().strip() #opinions
         
         aspect_BIO = {}
         
         #facilitate bio notation
-        if '##' in labeled_sent:
-                opinions = labeled_sent.split('##')[1].strip()
-                opinions = opinions.split(',')
-                
-                for opinion in opinions:
-                    op_list = opinion.split()[:-1]
-                    if len(op_list) > 1:
-                        for ind, term in enumerate(nodes):
-                            if term != None:
-                                if term == op_list[0] and ind < len(nodes) - 1 and nodes[ind + 1] != None and nodes[ind + 1] == op_list[1]:
-                                    tree.get(ind).trueLabel = 3
-                                    for i in range(len(op_list) - 1):
-                                        if nodes[ind + i + 1] != None and nodes[ind + i + 1] == op_list[i + 1]:
-                                            tree.get(ind + i + 1).trueLabel = 4
-                                        
-                    elif len(op_list) == 1:
-                        for ind, term in enumerate(nodes):
-                            if term != None:
-                                if term == op_list[0] and tree.get(ind).trueLabel == 0:
-                                    tree.get(ind).trueLabel = 3
-        
-        if aspect_term != 'NIL':
-            aspects = aspect_term.split(',')
+        if labeled_sent != 'NIL':
+            opinions = labeled_sent.split(', ')
             
+            for opinion in opinions:
+                op_list = opinion.split()[:-1]
+                if len(op_list) > 1:
+                    for ind, term in enumerate(nodes):
+                        if term != None:
+                            if term == op_list[0] and ind < len(nodes) - 1 and nodes[ind + 1] != None and nodes[ind + 1] == op_list[1]:
+                                tree.get(ind).trueLabel = 3
+                                for i in range(len(op_list) - 1):
+                                    if nodes[ind + i + 1] != None and nodes[ind + i + 1] == op_list[i + 1]:
+                                        tree.get(ind + i + 1).trueLabel = 4
+                                    
+                elif len(op_list) == 1:
+                    for ind, term in enumerate(nodes):
+                        if term != None:
+                            if term == op_list[0] and tree.get(ind).trueLabel == 0:
+                                tree.get(ind).trueLabel = 3
+        
+        if aspect_term != 'NULL':
+            aspects = aspect_term.split(',')
                         
             #deal with same word but different labels
             for aspect in aspects:
@@ -153,29 +115,36 @@ for line in data:
             
         # add dependency edges between nodes
         for rel, deps in plist:
-            par_ind, par_word = deps[0]
-            kid_ind, kid_word = deps[1]
+            par_ind = int(deps[2])
+            kid_ind = deps[0]
             tree.add_edge(par_ind, kid_ind, rel)
 
+        print(tree.get_tree())
         tree_dict.append(tree)  
         
         for node in tree.get_nodes():
-            if node.word.lower() not in vocab:
-                vocab.append(node.word.lower())
-                
-            node.ind = vocab.index(node.word.lower())
+#             for training data
+            # if node.word.lower() not in vocab:
+            #     vocab.append(node.word.lower())
+
+#             for testing data
+            if node.word.lower() in vocab:
+                node.ind = vocab.index(node.word.lower())
+               
+            # node.ind = vocab.index(node.word.lower())
             
-            for ind, rel in node.kids:
-                if rel not in rel_list:
-                    rel_list.append(rel)
+            # for ind, rel in node.kids:
+            #     if rel not in rel_list:
+            #         rel_list.append(rel)
 
         plist = []
+        index = 1
         indice += 1
 
 
 print('rels: ', len(rel_list))
 print('vocab: ', len(vocab))
 
-cPickle.dump((vocab, rel_list, tree_dict), open("data_semEval/final_input_sample", "wb"))
+cPickle.dump((vocab, rel_list, tree_dict), open("data_semEval/final_laptop_test_input", "wb"))
 
 
